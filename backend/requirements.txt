@@ -1,3 +1,17 @@
+# Flask framework
 Flask==2.3.3
-Flask-MySQLdb==1.0.1
+
+# MySQL driver (pure Python, avoids build issues on Windows)
+PyMySQL==1.1.1
+
+# Flask extension for MySQL integration
+Flask-MySQL==1.5.1
+
+# Password hashing
 bcrypt==4.0.1
+
+# Optional: For pretty JSON responses or utilities
+Flask-JSON==0.4.0
+
+# Optional: For testing
+pytest==8.3.1
