@@ -63,6 +63,12 @@ online-library/
 │ ├── test_content.py # Tests catalog/search/reading logic
 │ └── test_reviews.py # Tests review rules
 │
+├── documentation/
+│ ├── ARCHITECTURE.md # Detailed project architecture, folder & file explanations
+│ ├── PROTOTYPES.md # Prototype roadmap from skeleton to bonus features
+│ ├── DEPENDENCIES.md  # List of required libraries, frameworks, and setup instructions 
+│ └── SECURITY.md # Security considerations for frontend, backend, and DB
+│
 ├── ARCHITECTURE.md # This document
 ├── README.md # Project overview + setup instructions
 └── .gitignore # Ignored files/folders for git
