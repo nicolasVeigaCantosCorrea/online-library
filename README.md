@@ -37,7 +37,7 @@ python -m venv venv
 ```bash
 venv\Scripts\Activate.ps1
 ```
--Linux/macOS:
+- Linux/macOS:
 ```bash
 source venv/bin/activate
 ```
@@ -48,7 +48,8 @@ pip install -r backend/requirements.txt
 ```
 
 5. Setup the database
-**Option A: MySQL Workbench (GUI)
+
+**Option A**: MySQL Workbench (GUI)
 If you prefer a visual interface, follow these steps:
 - **Connect**: Open MySQL Workbench and connect to your local instance using your credentials (e.g., root).
 - **Create Schema**: Run the following command in a new query tab:
@@ -58,14 +59,14 @@ If you prefer a visual interface, follow these steps:
 - **Initialize Tables**: Open the file *backend/db/init.sql* and execute the entire script to generate the required tables.
 - **Populate Data**: Open *backend/db/data.sql* and execute it to load the sample data.
 
-**Option B: Command Line (CLI)
+**Option B**: Command Line (CLI)
 For those who like to stay in the terminal, run these commands from the root of the project:
 - **Connect**: Open MySQL Workbench and connect to your local instance using your credentials (e.g., root).
 - **Create Schema**: Run the following command in a new query tab:
 	```sql
 	CREATE DATABASE online_library;
 	```
-*run the following commands from project root:
+*run the following commands from project root*:
 - Initialize tables:
 ```bash
 mysql -u <user> -p online_library < backend/db/init.sql
