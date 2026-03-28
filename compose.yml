@@ -35,9 +35,8 @@ services:
   db:
     image: mysql:8    # MySQL version 8
     container_name: mysql-container
-    ## Uncomment this only if we need to use mysql db with mysql workbench
-    # ports:
-    #   - '3306:3306'
+    ports: # Comment this if we don't need to use mysql db with mysql workbench
+      - '3306:3306'
     environment:
       MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: online_library
