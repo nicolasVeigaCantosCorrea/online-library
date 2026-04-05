@@ -1,24 +1,27 @@
-# Core
+# Core web framework
 Flask==2.3.3
 
-# Database (raw SQL)
+# MySQL driver (raw SQL queries, no ORM)
 PyMySQL==1.1.1
 
-# Validation / DTOs
+# Data validation and serialization (DTOs)
 marshmallow==3.21.1
-flask-marshmallow==0.15.0
 
-# Auth (JWT)
+# JWT authentication (login, access tokens, protected routes)
 Flask-JWT-Extended==4.6.0
 
-# Password hashing
+# Password hashing (secure storage of passwords)
 bcrypt==4.0.1
 
-# Optional: environment variables
+# Load environment variables from .env file
 python-dotenv==1.0.1
 
-# Optional: CORS for React frontend
+# Enable CORS (allow frontend like React to call API)
 Flask-Cors==4.0.0
 
-# Testing
+# Testing framework
 pytest==8.3.1
+pytest-mock==3.14.0
+
+# Production WSGI server (run app outside Flask dev server)
+gunicorn==22.0.0

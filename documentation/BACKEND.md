@@ -20,32 +20,54 @@ A RESTful backend API for an online library system, built with Flask. Supports b
 ---
 
 ## 📁 Project Structure
+Feature-based archictecture:
 
 ```
 online-library/
-├── run.py                  # Entry point — creates and runs the app
+├── run.py                          # Entry point — creates and runs the app
 ├── requirements.txt
-├── .env                    # Environment variables (not committed) #TODO: WIP
+├── .env                            # Environment variables
 └── backend/
     └── app/
-        ├── __init__.py     # App factory (create_app)
-        ├── config.py       # Config loaded from .env TODO: env not integrated yet
-        ├── extensions.py   # Flask extensions + DB connection
-        ├── routes/
+        ├── __init__.py             # App factory (create_app), registers all blueprints
+        ├── config.py               # Config loaded from .env
+        ├── extensions.py           # get_db(), close_db(), mysql connection via Flask g
+        ├── models/                 # Shared dataclasses — shape of data, no DB logic
         │   ├── __init__.py
-        │   └── books.py    # Book endpoints
-        ├── services/
-        │   ├── __init__.py
-        │   └── book_service.py  # Business logic
-        ├── repositories/
-        │   ├── __init__.py
-        │   └── book_repo.py     # Raw SQL queries
-        ├── schemas/
-        │   ├── __init__.py
-        │   └── book_schema.py   # Marshmallow schemas
+        │   ├── book.py
+        │   ├── author.py
+        │   ├── user.py
+        │   └── publisher.py
+        ├── features/
+        │   ├── books/
+        │   │   ├── __init__.py
+        │   │   ├── routes.py       # Blueprint, HTTP in/out only
+        │   │   ├── service.py      # Business logic, calls repo(s)
+        │   │   ├── repo.py         # Raw SQL queries, returns Book dataclasses
+        │   │   └── schema.py       # Marshmallow: validate input, serialize output
+        │   ├── authors/
+        │   │   ├── __init__.py
+        │   │   ├── routes.py
+        │   │   ├── service.py
+        │   │   ├── repo.py
+        │   │   └── schema.py
+        │   ├── users/
+        │   │   ├── __init__.py
+        │   │   ├── routes.py
+        │   │   ├── service.py
+        │   │   ├── repo.py
+        │   │   └── schema.py
+        │   └── publishers/
+        │       ├── __init__.py
+        │       ├── routes.py
+        │       ├── service.py
+        │       ├── repo.py
+        │       └── schema.py
+        ├── middleware/             # Auth, error handling, logging, etc.
+        │   └── __init__.py
         └── utils/
             ├── __init__.py
-            └── errors.py        # Custom error classes
+            └── errors.py          # Custom error classes
 ```
 
 ---
