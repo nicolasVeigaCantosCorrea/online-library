@@ -1,4 +1,4 @@
-from backend.app.errors import AppError
+from app.errors import AppError
 from app.repositories.base_repo import BaseRepo
 
 

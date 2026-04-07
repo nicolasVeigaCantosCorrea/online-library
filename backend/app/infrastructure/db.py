@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Generator
+from typing import Generator, Any, cast
 from pymysql.connections import Connection
 from pymysql.cursors import DictCursor
 import pymysql
@@ -39,7 +39,7 @@ class Database:
         self._initialized = True
 
     # Connects to db wit user
-    def _get_connection(self) -> Connection[DictCursor]:
+    def _get_connection(self) -> Connection:
         return pymysql.connect(  # type: ignore[call-overload]
             host=self.host,
             user=self.user,
@@ -52,7 +52,7 @@ class Database:
 
     # returns Generator[YieldType, SendType, ReturnType]
     @contextmanager
-    def _get_db(self) -> Generator[Connection[DictCursor], None, None]:
+    def _get_db(self) -> Generator[Connection, None, None]:
         connection = self._get_connection()
         try:
             # yields when used with "with"
@@ -62,16 +62,18 @@ class Database:
 
     # params replaces %s placeholders in queries: "SELECT * FROM books WHERE id = %s", (1,)
     # returns first result as dict or None if not found: {"id": 1, "title": "Dune"}
-    def execute(self, query: str, params: tuple = ()) -> list[dict]:
+    def execute(self, query: str, params: tuple = ()) -> list[dict[str, Any]]:
         with self._get_db() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query, params)
-                return list(cursor.fetchall())
+                # Already DictCursor → cast only for type checker
+                return cast(list[dict[str, Any]], cursor.fetchall())
 
     # params replaces %s placeholders in queries: "SELECT * FROM books WHERE id = %s", (1,)
     # returns first result as dict or None if not found: {"id": 1, "title": "Dune"}
-    def execute_one(self, query: str, params: tuple = ()) -> dict | None:
+    def execute_one(self, query: str, params: tuple = ()) -> dict[str, Any] | None:
         with self._get_db() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(query, params)
-                return cursor.fetchone()
+                # fetchone may return None
+                return cast(dict[str, Any] | None, cursor.fetchone())

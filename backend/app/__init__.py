@@ -3,7 +3,7 @@ from app.config import Config
 from app.middleware.error_handlers import register_error_handlers
 from app.middleware.logging import configure_logging
 
-from app.extensions import ma, jwt, cors
+from app.extensions import jwt, cors
 from app.routes.health import bp as health_bp
 from app.routes.index import bp as index_bp
 from app.routes.books import bp as books_bp
@@ -24,9 +24,6 @@ def create_app() -> Flask:
     configure_logging()
 
     # == Initialize extensions
-
-    # Marshmallow
-    ma.init_app(app)
 
     # JWT tokens
     jwt.init_app(app)

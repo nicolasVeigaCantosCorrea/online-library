@@ -1,11 +1,12 @@
-from app.extensions import ma
-from marshmallow import fields
+from marshmallow import Schema, fields
 
-class BookCreateSchema(ma.Schema):
+
+class BookCreateSchema(Schema):
     title = fields.Str(required=True)
     description = fields.Str()
 
-class BookResponseSchema(ma.Schema):
+
+class BookResponseSchema(Schema):
     id = fields.Int()
     title = fields.Str()
     description = fields.Str()
