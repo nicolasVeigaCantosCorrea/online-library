@@ -124,6 +124,12 @@ IMAGE_TAG=<tag> docker compose -f docker-compose.prod.yml up -d
 docker compose down
 ```
 
+If .env changed and the container and volume was built once already, do this for a fresh start (careful this deletes all stored data of the container):
+
+```bash
+docker-compose down -v
+```
+
 ---
 
 ## 🌐 Servers
@@ -150,15 +156,16 @@ docker compose down
 
 The database is initialized automatically on first boot. All SQL files in `backend/db/` are executed in order.
 
-To inspect the database, connect via **MySQL Workbench**:
+To inspect the database, connect via **MySQL Workbench** by dev composer:
 
 | Field | Value |
 |---|---|
 | Host | localhost |
 | Port | 3306 |
 | User | `myuser` (app user) or `root` (admin) |
-| Password | `MYSQL_PASSWORD` or `MYSQL_ROOT_PASSWORD` from `backend/.env` |
+| Password | `mypassword`(app user) or `secret`(admin) |
 
+> Password and User depends on the .env variables of backend. So if there are changes there this will change
 ---
 
 ## 🔄 When to Rebuild
