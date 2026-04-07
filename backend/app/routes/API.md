@@ -1,8 +1,6 @@
 This is the imagined APIs endpoints needed.
 Update this if there's a smarter and better way:
 
-> Also every Get all should have queries with params.
-
 ```md
 /auth
     POST /login
@@ -39,6 +37,7 @@ Update this if there's a smarter and better way:
     GET /:id                        # Get genre by id
     POST /                          # Admin required, Create genre
     DELETE /:id                     # Admin required
+
 /authors
     GET /                           # Get all author, queries with params
     GET /:id                        # Get author by id
@@ -50,14 +49,6 @@ Update this if there's a smarter and better way:
     POST /                          # Admin required, Create publishers
     DELETE /:id                     # Admin required
 
-<<<<<<< Updated upstream
-    /publishers
-        GET /, POST /, etc.
-
 /search
     GET /?q=...          # search across books, authors, genres, publishers, users
 ```
-=======
-/search # This uses the queries from the service of other endpoints
-    GET /?q=...          # search across books, authors, genres, publishers, users
->>>>>>> Stashed changes
