@@ -13,7 +13,6 @@ Update this if there's a smarter and better way:
     GET /:id
     GET /me/comments                # protected, get all user comments, allow query as well (like search by book id or book name)
     GET /me/books                   # protected, my saved books
-    GET /me/books/:id               # protected, get one of user books (with bookmark)
     POST /me/books                  # protected, save a book
     DELETE /me/books/:id            # protected,remove a saved book
     PUT /:id                        # protected, admin and ownership checked in service layer
@@ -29,7 +28,7 @@ Update this if there's a smarter and better way:
     POST /:id/comments              # create a comment — add this back
 
 /comments
-    PUT /:id                        # protected
+    PUT /:id                        # protected, admin and ownership checked in sesrvice layer
     DELETE /:id                     # protected, admin and ownership checked in service layer
 
 /genres

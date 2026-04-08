@@ -4,16 +4,27 @@ from app.middleware.error_handlers import register_error_handlers
 from app.middleware.logging import configure_logging
 
 from app.extensions import jwt, cors
-from app.routes.health import bp as health_bp
-from app.routes.index import bp as index_bp
-from app.routes.books_route import bp as books_bp
+
+
+route_modules = [
+    "app.routes.health",
+    "app.routes.index",
+    "app.routes.books_route",
+    "app.routes.auth_route",
+    "app.routes.authors_route",
+    "app.routes.comments_route",
+    "app.routes.genres_route",
+    "app.routes.publishers_route",
+    "app.routes.search_route",
+    "app.routes.users_route",
+]
 
 
 # Add blueprints of routes in here
 def register_blueprints(app: Flask) -> None:
-    app.register_blueprint(health_bp)
-    app.register_blueprint(index_bp)
-    app.register_blueprint(books_bp)
+    for module_path in route_modules:
+        module = __import__(module_path, fromlist=["bp"])
+        app.register_blueprint(module.bp)
 
 
 def create_app() -> Flask:

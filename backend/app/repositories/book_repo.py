@@ -1,6 +1,12 @@
 from app.repositories.base_repo import BaseRepo
 from app.models.book import Book
 
+# If we need to make various queries do it like this: !!!!!
+# with database.transaction() as conn:
+#     database.execute("INSERT INTO orders ...", (...), conn=conn)
+#     database.execute("UPDATE inventory ...", (...), conn=conn)
+#     # Both commit together, or both roll back
+
 
 class BookRepo(BaseRepo):
     def get_all_books(self):
@@ -11,7 +17,7 @@ class BookRepo(BaseRepo):
 
     # This code is not complete (colomns not all there)
     # Merely an example of utilisation of Models
-    def get_by_id(self, book_id: int) -> Book | None:
+    def get_by_id(self, book_id: str) -> Book | None:
         query = f"""
             SELECT {Book.Columns.ID}, 
                 {Book.Columns.TITLE}, 
@@ -29,3 +35,6 @@ class BookRepo(BaseRepo):
             title=row[Book.Columns.TITLE],
             isbn=row[Book.Columns.ISBN],
         )
+
+
+book_repo = BookRepo()

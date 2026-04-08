@@ -3,6 +3,7 @@ Flask==2.3.3
 
 # MySQL driver (raw SQL queries, no ORM)
 PyMySQL==1.1.1
+pymysql-pool==0.5.0 # For pooling mysql request
 
 # Data validation and serialization (DTOs)
 marshmallow==3.21.1

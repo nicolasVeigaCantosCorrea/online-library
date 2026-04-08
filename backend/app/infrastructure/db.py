@@ -1,7 +1,9 @@
 from contextlib import contextmanager
 from typing import Generator, Any, cast
 from pymysql.connections import Connection
+from pymysqlpool import ConnectionPool
 from pymysql.cursors import DictCursor
+from app.errors import AppError
 import pymysql
 import os
 
@@ -21,59 +23,79 @@ class Database:
         if hasattr(self, "_initialized"):
             return
 
+        host = os.getenv("MYSQL_HOST", "localhost")
+        port = int(os.getenv("MYSQL_PORT", "3306"))
         user = os.getenv("MYSQL_USER")
         password = os.getenv("MYSQL_PASSWORD")
-        database = os.getenv("MYSQL_DATABASE")
+        database = os.getenv("MYSQL_DATABASE", "mydb")
 
-        if not user or not password or not database:
-            raise RuntimeError("Missing required database environment variables")
+        if not user or not password:
+            raise RuntimeError("Missing .env: MYSQL_USER or MYSQL_PASSWORD")
 
-        # After the check above, these are guaranteed to be str
-        self.user: str = user
-        self.password: str = password
-        self.database: str = database
-        # Use MYSQL_HOST env var = localhost if running mysql server locally and not through docker
-        self.host: str = os.getenv("MYSQL_HOST", "localhost")
-        self.port: int = int(os.getenv("MYSQL_PORT", "3306"))
-
-        self._initialized = True
-
-    # Connects to db wit user
-    def _get_connection(self) -> Connection:
-        return pymysql.connect(  # type: ignore[call-overload]
-            host=self.host,
-            user=self.user,
-            password=self.password,
-            database=self.database,
-            port=self.port,
+        self._pool = ConnectionPool(
+            host=host,
+            user=user,
+            password=password,
+            database=database,
+            port=port,
+            size=5,
+            maxsize=10,
             autocommit=True,
             cursorclass=DictCursor,
         )
 
-    # returns Generator[YieldType, SendType, ReturnType]
+        self._initialized = True
+
     @contextmanager
-    def _get_db(self) -> Generator[Connection, None, None]:
-        connection = self._get_connection()
+    def _get_conn(self) -> Generator[Connection, None, None]:
+        conn = self._pool.get_connection()
         try:
-            # yields when used with "with"
-            yield connection
+            yield conn
         finally:
-            connection.close()
+            conn.close()
+
+    @contextmanager
+    # Provides a transaction context for multi-step writes
+    def transaction(self) -> Generator[Connection, None, None]:
+        with self._get_conn() as conn:
+            conn.autocommit(False)  # Critical — pool default is True
+            try:
+                yield conn
+                conn.commit()
+            except Exception:
+                conn.rollback()
+                raise
+            finally:
+                conn.autocommit(True)  # Restore for pool reuse
 
     # params replaces %s placeholders in queries: "SELECT * FROM books WHERE id = %s", (1,)
     # returns first result as dict or None if not found: {"id": 1, "title": "Dune"}
-    def execute(self, query: str, params: tuple = ()) -> list[dict[str, Any]]:
-        with self._get_db() as conn:
+    def execute(
+        self, query: str, params: tuple[str, ...] = (), conn: Connection | None = None
+    ) -> list[dict[str, Any]]:
+        if conn is not None:
             with conn.cursor() as cursor:
                 cursor.execute(query, params)
-                # Already DictCursor → cast only for type checker
+                return cast(list[dict[str, Any]], cursor.fetchall())
+        with self._get_conn() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, params)
                 return cast(list[dict[str, Any]], cursor.fetchall())
 
     # params replaces %s placeholders in queries: "SELECT * FROM books WHERE id = %s", (1,)
     # returns first result as dict or None if not found: {"id": 1, "title": "Dune"}
-    def execute_one(self, query: str, params: tuple = ()) -> dict[str, Any] | None:
-        with self._get_db() as conn:
+    def execute_one(
+        self, query: str, params: tuple[str, ...] = (), conn: Connection | None = None
+    ) -> dict[str, Any] | None:
+        if conn is not None:
             with conn.cursor() as cursor:
                 cursor.execute(query, params)
-                # fetchone may return None
                 return cast(dict[str, Any] | None, cursor.fetchone())
+        with self._get_conn() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, params)
+                return cast(dict[str, Any] | None, cursor.fetchone())
+
+
+# This is what we import
+database = Database()
