@@ -1,20 +1,40 @@
-from app.extensions import get_connection
-from app.utils.errors import AppError
+from app.repositories.base_repo import BaseRepo
+from app.models.book import Book
 
-def get_all_books():
-    try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT id, title, author_id FROM books")
-            return cursor.fetchall()
-    except Exception:
-        raise AppError("Database error")
+# If we need to make various queries do it like this: !!!!!
+# with database.transaction() as conn:
+#     database.execute("INSERT INTO orders ...", (...), conn=conn)
+#     database.execute("UPDATE inventory ...", (...), conn=conn)
+#     # Both commit together, or both roll back
 
-def create_book(title, author_id):
-    try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            sql = "INSERT INTO books (title, author_id) VALUES (%s, %s)"
-            cursor.execute(sql, (title, author_id))
-    except Exception:
-        raise AppError("Database error")
+
+class BookRepo(BaseRepo):
+    def get_all_books(self):
+        pass
+
+    def create_book(self, title, author_id):
+        pass
+
+    # This code is not complete (colomns not all there)
+    # Merely an example of utilisation of Models
+    def get_by_id(self, book_id: str) -> Book | None:
+        query = f"""
+            SELECT {Book.Columns.ID}, 
+                {Book.Columns.TITLE}, 
+                {Book.Columns.ISBN}
+            FROM {Book.TABLE}
+            WHERE {Book.Columns.ID} = %s
+        """
+
+        rows = self._db.execute(query, (book_id,))
+        if not rows:
+            return None
+        row = rows[0]
+        return Book(
+            id=row[Book.Columns.ID],
+            title=row[Book.Columns.TITLE],
+            isbn=row[Book.Columns.ISBN],
+        )
+
+
+book_repo = BookRepo()

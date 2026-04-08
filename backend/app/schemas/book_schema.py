@@ -1,11 +1,7 @@
-from app.extensions import ma
-from marshmallow import fields
+from marshmallow import Schema, fields
 
-class BookCreateSchema(ma.Schema):
-    title = fields.Str(required=True)
-    description = fields.Str()
 
-class BookResponseSchema(ma.Schema):
-    id = fields.Int()
-    title = fields.Str()
-    description = fields.Str()
+class BookSchema(Schema):
+    id = fields.Int(dump_only=True)  # returned by API, not required on input
+    title = fields.Str(required=True)  # must be provided on input
+    description = fields.Str(load_only=True)

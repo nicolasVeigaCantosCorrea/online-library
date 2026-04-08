@@ -1,43 +1,51 @@
-import logging
 from flask import Flask
-from app.utils.errors import AppError
 from app.config import Config
+from app.middleware.error_handlers import register_error_handlers
+from app.middleware.logging import configure_logging
 
-from app.extensions import ma, jwt
-from app.routes.health import bp as health_bp
-from app.routes.index import bp as index_bp
-from app.routes.books import bp as books_bp
+from app.extensions import jwt, cors
+
+
+route_modules = [
+    "app.routes.health",
+    "app.routes.index",
+    "app.routes.books_route",
+    "app.routes.auth_route",
+    "app.routes.authors_route",
+    "app.routes.comments_route",
+    "app.routes.genres_route",
+    "app.routes.publishers_route",
+    "app.routes.search_route",
+    "app.routes.users_route",
+]
+
 
 # Add blueprints of routes in here
 def register_blueprints(app: Flask) -> None:
-    app.register_blueprint(health_bp)
-    app.register_blueprint(index_bp)
-    app.register_blueprint(books_bp)
+    for module_path in route_modules:
+        module = __import__(module_path, fromlist=["bp"])
+        app.register_blueprint(module.bp)
 
-class HealthCheckFilter(logging.Filter):
-    def filter(self, record):
-        return 'GET /health' not in record.getMessage()
-    
-def configure_logging():
-    log = logging.getLogger('werkzeug')
-    log.addFilter(HealthCheckFilter())
 
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # For now this only filters the /health log
+    # Middleware config, only filters the /health log
     configure_logging()
 
-    # Initialize extensions
-    ma.init_app(app)
+    # == Initialize extensions
+
+    # JWT tokens
     jwt.init_app(app)
 
+    # CORS allowed origins
+    cors.init_app(app, resources={r"/*": {"origins": app.config["CORS_ORIGINS"]}})
+
+    # == This is where our routes are
     register_blueprints(app)
 
-    # Global error handler
-    @app.errorhandler(AppError)
-    def handle_app_error(e):
-        return {"error": e.__class__.__name__, "message": e.message}, e.status_code
+    # == Register how every error is handled in app
+    register_error_handlers(app)
 
     return app

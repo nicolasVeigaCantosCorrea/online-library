@@ -1,7 +1,8 @@
 from flask import Blueprint
 
-bp = Blueprint("health", __name__)
+bp = Blueprint("health", __name__, url_prefix="/health")
 
-@bp.route("/health")
+
+@bp.route("/")
 def health():
-    return {"status" : "SERVER IS WORKING AAAAA"}, 200
+    return {"status": "SERVER IS WORKING AAAAA"}, 200
