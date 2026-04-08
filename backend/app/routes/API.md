@@ -19,8 +19,8 @@ Update this if there's a smarter and better way:
     DELETE /:id                     # protected, admin and ownership checked in service layer
 
 /books
-    GET /                           # Get all books, query params (like searching for genre names)
-    GET /:id
+    GET /                           # Get all books, query params (like searching for genre names). Also return bookmarks if user logged in
+    GET /:id                        # Also returns info about bookmark if user logged in.
     POST /                          # Admin required
     PUT /:id                        # Admin required
     DELETE /:id                     # Admin required

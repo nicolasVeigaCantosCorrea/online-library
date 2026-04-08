@@ -26,12 +26,12 @@ def require_owner_or_admin(service, resource_id_arg="id"):
         @wraps(f)
         def wrapper(*args, **kwargs):
             resource_id = kwargs.get(resource_id_arg)
-            resource = service.get_user_id_with_resource_id(resource_id)
+            resource_user_id = service.get_user_id_with_resource_id(resource_id)
 
-            if not resource:
+            if not resource_user_id:
                 raise AppError(404, "Resource not found")
 
-            if not (is_admin() or resource.user_id == get_user_id()):
+            if not (is_admin() or resource_user_id == get_user_id()):
                 raise AppError(403, "User is not owner")
 
             return f(*args, **kwargs)
