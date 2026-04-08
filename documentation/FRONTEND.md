@@ -75,8 +75,6 @@ Tailwind is configured in `tailwind.config.js` to scan all files in `./index.htm
 **1. Create a new file in `pages/` (e.g., `About.tsx`):**
 
 ```tsx
-import React from "react"
-
 function About() {
   return <div>About Page</div>
 }
