@@ -1,22 +1,20 @@
 from flask import Blueprint, request
-from app.services.comment_service import comment_service
-from app.utils.apiResponse import success_response
-from app.utils.guards import require_owner_or_admin
+from backend.app.services.comment_service import comment_service
+from backend.app.utils.apiResponse import success_response
+from backend.app.utils.guards import require_owner_or_admin
+from backend.app.schemas.comment_schema import CommentSchema
 
 bp = Blueprint("comments", __name__, url_prefix="/comments")
 
-
-# PLACEHOLDER
-@bp.put("/:id")
+@bp.put("/<int:id>")
 @require_owner_or_admin(comment_service.get_owner_id)
-def update_comment():
-    message = f"Endpoint update /{bp.name}/:id called"
-    return success_response(201, None, message)
+def update_comment(id):
+    data = request.json
+    updated_comment = comment_service.update_comment(id, data.get('message'))
+    return success_response(200, CommentSchema().dump(updated_comment), "Commentaire mis à jour")
 
-
-# PLACEHOLDER
-@bp.delete("/:id")
+@bp.delete("/<int:id>")
 @require_owner_or_admin(comment_service.get_owner_id)
-def delete_comment():
-    message = f"Endpoint delete /{bp.name}/:id called"
-    return success_response(201, None, message)
+def delete_comment(id):
+    comment_service.delete_comment(id)
+    return success_response(200, None, "Commentaire supprimé")
