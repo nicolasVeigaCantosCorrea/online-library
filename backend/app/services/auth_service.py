@@ -35,8 +35,7 @@ class AuthService:
         )
 
         return {
-            "user": self._to_user_dict(user),
-            "is_admin": is_admin,
+            "user": {**self._to_user_dict(user), "is_admin": is_admin},
             "access_token": access_token,
             "refresh_token": refresh_token,
         }

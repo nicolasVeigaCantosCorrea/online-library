@@ -4,6 +4,7 @@ from .user_schema import UserSchema
 
 class AuthSchema(Schema):
     user = fields.Nested(UserSchema, dump_only=True)
+    is_admin = fields.Bool(dump_only=True, data_key="is_admin")
     access_token = fields.Str(dump_only=True, data_key="token_access")
     refresh_token = fields.Str(dump_only=True, data_key="token_refresh")
 
