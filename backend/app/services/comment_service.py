@@ -2,6 +2,7 @@ from app.services.ownable_service import OwnableService
 from app.repositories.comment_repo import comment_repo
 from app.errors import AppError
 
+
 class CommentService(OwnableService):
     def __init__(self):
         self._repo = comment_repo
@@ -9,7 +10,7 @@ class CommentService(OwnableService):
     def get_owner_id(self, resource_id) -> str:
         comment = self._repo.get_by_id(resource_id)
         if not comment:
-            raise AppError("Commentaire introuvable", 404)
+            raise AppError(404, "Commentaire introuvable")
         return str(comment.user_id)
 
     def add_comment(self, user_id, book_id, message):
@@ -24,5 +25,6 @@ class CommentService(OwnableService):
 
     def get_comments_by_book(self, lid: int):
         return self._repo.get_by_book(lid)
+
 
 comment_service = CommentService()

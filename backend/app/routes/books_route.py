@@ -34,11 +34,13 @@ def add_book():
 
     return success_response(201, schema.dump(new_book), "Livre créé avec succès")
 
+
 @bp.post("/<int:lid>/authors/<int:aid>")
 @admin_required
 def link_author_to_book(lid, aid):
     book_service.link_author(lid, aid)
     return success_response(201, None, "Auteur lié au livre")
+
 
 @bp.post("/<int:lid>/genres/<int:gid>")
 @admin_required
@@ -46,13 +48,15 @@ def link_genre_to_book(lid, gid):
     book_service.link_genre(lid, gid)
     return success_response(201, None, "Genre lié au livre")
 
+
 @bp.get("/<int:id>")
 def get_book_full_details(id):
     detailed_book = book_service.get_book_details(id)
     return success_response(200, detailed_book, "Détails du livre récupérés")
 
+
 # Utilise la classe directement pour créer l'instance
-@bp.route('/<int:lid>/comments', methods=['GET'])
+@bp.route("/<int:lid>/comments", methods=["GET"])
 def get_book_comments(lid):
     comments = comment_service.get_comments_by_book(lid)
     schema = CommentSchema(many=True)

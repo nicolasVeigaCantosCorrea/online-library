@@ -27,8 +27,8 @@ class BookService:
         genres_data = self._repo.get_genres_by_book(lid)
 
         book_dict = BookSchema().dump(book)
-        book_dict['authors'] = authors_data
-        book_dict['genres'] = genres_data
+        book_dict["authors"] = authors_data
+        book_dict["genres"] = genres_data
 
         return book_dict
 
@@ -43,8 +43,25 @@ class BookService:
 
         return self.get_book_details(lid)
 
-    def update_book_media(self, book_id: int, cover_url: str = None, content_url: str = None):
+    def link_author(self, book_id: int, author_id: int):
+        book = self.get_book_by_id(book_id)  # Ensure book exists
+        if not book:
+            raise AppError(404, "Livre introuvable")
+
+        self._repo.link_author(book_id, author_id)
+
+    def link_genre(self, book_id: int, genre_id: int):
+        book = self.get_book_by_id(book_id)  # Ensure book exists
+        if not book:
+            raise AppError(404, "Livre introuvable")
+        self._repo.link_genre(book_id, genre_id)
+
+    def update_book_media(
+        self, book_id: int, cover_url: str = None, content_url: str = None
+    ):
         book = self.get_book_by_id(book_id)
+        if not book:
+            raise AppError(404, "Livre introuvable")
 
         updates = {}
         if cover_url:
@@ -56,4 +73,6 @@ class BookService:
             self._repo.update_fields(book_id, updates)
 
         return self._repo.get_by_id(book_id)
+
+
 book_service = BookService()
