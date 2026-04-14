@@ -67,7 +67,7 @@ class AuthService:
         if not token:
             raise AppError(401, "Invalid refresh token")
 
-        if token["revoked"] == 1:
+        if token["revoked"]:
             raise AppError(401, "Token revoked")
 
         if token["expires_at"] < datetime.utcnow():
