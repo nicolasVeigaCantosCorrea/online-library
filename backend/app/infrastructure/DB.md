@@ -97,7 +97,7 @@ user = database.execute_one(
 )
 
 if not user:
-    raise AppError("User not found", 404)
+    raise AppError(404, "User not found")
 ```
 
 ---

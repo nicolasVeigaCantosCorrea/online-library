@@ -3,7 +3,6 @@ from app.repositories.user_repo import user_repo
 from app.errors import AppError
 
 
-
 class UserService(OwnableService):
     def __init__(self):
         self._repo = user_repo
@@ -14,7 +13,7 @@ class UserService(OwnableService):
     def get_user_profile(self, uid: int):
         user = self._repo.get_by_id(uid)
         if not user:
-            raise AppError("Utilisateur introuvable", 404)
+            raise AppError(404, "Utilisateur introuvable")
         return user
 
     def update_user(self, uid: int, data: dict):
@@ -41,5 +40,6 @@ class UserService(OwnableService):
     def get_my_comments(self, uid: int):
         comments_data = self._repo.get_user_comments(uid)
         return comments_data
+
 
 user_service = UserService()

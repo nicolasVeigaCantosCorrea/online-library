@@ -74,10 +74,12 @@ VALUES (
     (SELECT LID FROM Livre WHERE nom = 'Nicolas\' rant')
 );
 
-INSERT IGNORE INTO Noter (UID, LID, note)
+
+SET @lid = (SELECT LID FROM Livre WHERE nom = 'Nicolas\' rant');
+INSERT INTO Noter (UID, LID, note)
 VALUES (
     (SELECT UID FROM Utilisateur WHERE email = 'example@gmail.com'),
-    (SELECT LID FROM Livre WHERE nom = 'Nicolas\' rant'),
+    @lid,
     4.5
 );
 
