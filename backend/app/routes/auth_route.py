@@ -2,45 +2,56 @@ from flask import Blueprint, request
 from app.services.auth_service import auth_service
 from flask_jwt_extended import jwt_required
 from app.utils.apiResponse import success_response
-
-from app.utils.security import generate_access_token
+from app.utils.guards import admin_required
+from app.utils.security import is_admin_from_jwt
+from app.schemas.auth_schema import *
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
-# PLACEHOLDER
 @bp.post("/login")
 def login():
-    ## Logique de connexion, pas encore faite. On va juste générer un token d'accès pour les tests.
-    data = request.get_json()
+    data = LoginSchema().load(request.get_json())
 
-    role = data.get("role")  # "admin" ou "client"
+    result = auth_service.login(email=data["email"], password=data["password"])
 
-    if role == "admin":
-        access_token = generate_access_token(str(1), True)  ## Admin - Admin
-    else:
-        access_token = generate_access_token(str(2), False)  ##Client - Exemple
-
-    return success_response(200, {"access_token": access_token})
+    return success_response(200, AuthSchema().dump(result))
 
 
-# PLACEHOLDER
 @bp.post("/signup")
 def signup():
-    message = f"Endpoint post /{bp.name}/signup called"
-    return success_response(201, None, message)
+    data = RegisterSchema().load(request.get_json())
+
+    result = auth_service.register(
+        name=data["name"], email=data["email"], password=data["password"]
+    )
+
+    return success_response(201, AuthSchema().dump(result))
 
 
-# PLACEHOLDER
 @bp.post("/logout")
+@jwt_required(refresh=True)
 def logout():
-    message = f"Endpoint post /{bp.name}/logout called"
-    return success_response(201, None, message)
+    refresh_token = request.headers.get("Authorization").split()[1]
+
+    auth_service.logout(refresh_token)
+
+    return success_response(200, None, "Logged out")
 
 
-# PLACEHOLDER
 @bp.post("/refresh")
-@jwt_required()
+@jwt_required(refresh=True)
 def refresh():
-    message = f"Endpoint post /{bp.name}/refresh called"
-    return success_response(201, None, message)
+    refresh_token = request.headers.get("Authorization").split()[1]
+    is_admin = is_admin_from_jwt()
+
+    access_token = auth_service.refresh_token(refresh_token, is_admin=is_admin)
+
+    return success_response(200, access_token)
+
+
+@bp.post("/promote/<int:uid>")
+@admin_required
+def promote_to_admin(uid: int):
+    auth_service.promote_to_admin(uid)
+    return success_response(200, None, "User promoted to admin")
