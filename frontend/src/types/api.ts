@@ -8,3 +8,7 @@ export type ApiError = {
     success: false;
     error: string | object;
 }
+
+export type ApiRefresh = {
+    access_token: string;
+}

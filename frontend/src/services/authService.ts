@@ -1,5 +1,5 @@
 import api from "./api";
-import type { ApiSuccess } from "../types/api";
+import type {ApiRefresh, ApiSuccess} from "../types/api";
 import type { SignupData, LoginData } from "../types/auth";
 
 export async function login(data:LoginData): Promise<ApiSuccess> {
@@ -17,7 +17,7 @@ export async function logout(): Promise<ApiSuccess> {
     return response.data;
 }
 
-export async function refresh(): Promise<ApiSuccess> {
+export async function refresh(): Promise<ApiRefresh> {
     const response = await api.post("/auth/refresh");
     return response.data;
 }

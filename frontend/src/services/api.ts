@@ -1,4 +1,6 @@
 import axios from "axios"
+import {useAuthStore} from "../store/authStore";
+import {refresh} from "./authService";
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -8,7 +10,7 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-    const token = null;
+    const token = useAuthStore.getState().accessToken;
 
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -19,9 +21,17 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
     (response) => response,
-    (error) => {
+    async (error) => {
         if (error.response?.status === 401) {
-            console.error("Demande non autorisée, redirection vers page de connection...")
+            try {
+                const token = await refresh();
+                useAuthStore.getState().setToken(token.access_token);
+                return api(error.config);
+            } catch {
+                console.error("Demande non autorisée, redirection vers page de connection...");
+                useAuthStore.getState().logout();
+            }
+
         }
         return Promise.reject(error);
     });
