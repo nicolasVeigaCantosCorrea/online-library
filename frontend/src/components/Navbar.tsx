@@ -10,11 +10,8 @@ function Navbar() {
           </Link>
         </li>
         <li>
-          <Link
-            className="text-white font-semibold hover:underline"
-            to="/login"
-          >
-            Login
+          <Link className="text-white font-semibold hover:underline" to="/auth">
+            Login/Signup
           </Link>
         </li>
         <li>

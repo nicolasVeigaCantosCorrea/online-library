@@ -1,39 +1,65 @@
-import axios from "axios"
-import {useAuthStore} from "../store/authStore";
-import {refresh} from "./authService";
+import axios from 'axios';
+import { useAuthStore } from '../store/authStore';
+import { refreshRequest } from './authService';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
-    headers: {
-        "Content-Type": "application/json"
-    }
-})
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+export const refreshApi = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 api.interceptors.request.use((config) => {
-    const token = useAuthStore.getState().accessToken;
+  const token = useAuthStore.getState().accessToken;
 
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
-    return config
+  return config;
 });
 
 api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        if (error.response?.status === 401) {
-            try {
-                const token = await refresh();
-                useAuthStore.getState().setToken(token.access_token);
-                return api(error.config);
-            } catch {
-                console.error("Demande non autorisée, redirection vers page de connection...");
-                useAuthStore.getState().logout();
-            }
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
 
-        }
-        return Promise.reject(error);
-    });
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
+
+    const hasToken = !!useAuthStore.getState().accessToken;
+
+    const isRetryable =
+      error.response?.status === 401 && hasToken && !originalRequest._retry;
+
+    if (!isRetryable) {
+      return Promise.reject(error);
+    }
+
+    originalRequest._retry = true;
+
+    try {
+      const { access_token } = await refreshRequest();
+
+      useAuthStore.getState().setToken(access_token);
+
+      originalRequest.headers.Authorization = `Bearer ${access_token}`;
+
+      return api(originalRequest);
+    } catch (err) {
+      useAuthStore.getState().logout();
+      return Promise.reject(err);
+    }
+  },
+);
 
 export default api;

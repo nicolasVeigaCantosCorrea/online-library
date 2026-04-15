@@ -1,14 +1,14 @@
 export type ApiSuccess = {
-    success: true;
-    data?: unknown;
-    message?: string;
-}
+  success: true;
+  data?: unknown;
+  message?: string;
+};
 
 export type ApiError = {
-    success: false;
-    error: string | object;
-}
+  success: false;
+  error: string | object;
+};
 
 export type ApiRefresh = {
-    access_token: string;
-}
+  access_token: string;
+};

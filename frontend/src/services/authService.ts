@@ -1,23 +1,26 @@
-import api from "./api";
-import type {ApiRefresh, ApiSuccess} from "../types/api";
-import type { SignupData, LoginData } from "../types/auth";
+import api, { refreshApi } from './api';
+import type { LoginData, SignupData, LoginResponse } from '../types/auth';
+import type { ApiRefresh, ApiSuccess } from '../types/api';
+import { unwrap } from '../utils/unwrap';
 
-export async function login(data:LoginData): Promise<ApiSuccess> {
-    const response = await api.post("/auth/login", data);
-    return response.data;
+export async function loginRequest(data: LoginData): Promise<LoginResponse> {
+  const res = await api.post<ApiSuccess>('/auth/login', data);
+
+  return unwrap<LoginResponse>(res);
 }
 
-export async function signup(data:SignupData): Promise<ApiSuccess> {
-    const response = await api.post("/auth/signup", data)
-    return response.data;
+export async function signupRequest(data: SignupData): Promise<LoginResponse> {
+  const res = await api.post<ApiSuccess>('/auth/signup', data);
+
+  return unwrap<LoginResponse>(res);
 }
 
-export async function logout(): Promise<ApiSuccess> {
-    const response = await api.post("/auth/logout");
-    return response.data;
+export async function logoutRequest(): Promise<void> {
+  await api.post('/auth/logout');
 }
 
-export async function refresh(): Promise<ApiRefresh> {
-    const response = await api.post("/auth/refresh");
-    return response.data;
+export async function refreshRequest(): Promise<ApiRefresh> {
+  const res = await refreshApi.post<ApiRefresh>('/auth/refresh');
+
+  return res.data;
 }
