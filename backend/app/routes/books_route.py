@@ -19,10 +19,10 @@ def get_all():
     return success_response(200, BookSchema(many=True).dump(books), "Livres récupérés")
 
 
-@bp.get("/<int:book_id>")
+@bp.get("/<int:id>")
 def get_by_id(book_id):
-    book = book_service.get_book_by_id(book_id)
-    return success_response(200, BookSchema().dump(book), "Livre trouvé")
+    detailed_book = book_service.get_book_details(id)
+    return success_response(200, detailed_book, "Détails du livre récupérés")
 
 
 @bp.post("/")
@@ -48,12 +48,6 @@ def link_author_to_book(lid, aid):
 def link_genre_to_book(lid, gid):
     book_service.link_genre(lid, gid)
     return success_response(201, None, "Genre lié au livre")
-
-
-@bp.get("/<int:id>")
-def get_book_full_details(id):
-    detailed_book = book_service.get_book_details(id)
-    return success_response(200, detailed_book, "Détails du livre récupérés")
 
 
 # Utilise la classe directement pour créer l'instance
