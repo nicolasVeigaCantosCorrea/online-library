@@ -19,7 +19,7 @@ from app.repositories.rating_repo import rating_repo
 
 class DatabaseSeeder:
     def __init__(self):
-        self.faker = Faker(['fr_FR'])
+        self.faker = Faker(["fr_FR"])
 
     def generate_dummy_pdf(self, file_path, title):
         """Génère physiquement un PDF dans le volume Docker"""
@@ -34,25 +34,37 @@ class DatabaseSeeder:
         print("Début du peuplement de la base de données...")
 
         # 1. Genres
-        genres = ["Science-Fiction", "Roman", "Policier", "Historique", "Biographie", "Fantastique"]
+        genres = [
+            "Science-Fiction",
+            "Roman",
+            "Policier",
+            "Historique",
+            "Biographie",
+            "Fantastique",
+        ]
         genre_ids = [genre_repo.create(g).id for g in genres]
 
         # 2. Éditeurs
-        editeur_ids = [publisher_repo.create(self.faker.company(), self.faker.catch_phrase()).id for _ in range(10)]
+        editeur_ids = [
+            publisher_repo.create(self.faker.company(), self.faker.catch_phrase()).id
+            for _ in range(10)
+        ]
 
         # 3. Auteurs
         author_ids = []
         for _ in range(30):
-            author = author_repo.create({
-                'name': self.faker.name(),
-                'description': self.faker.text(max_nb_chars=200),
-                'photo_url': self.faker.image_url()
-            })
+            author = author_repo.create(
+                {
+                    "name": self.faker.name(),
+                    "description": self.faker.text(max_nb_chars=200),
+                    "photo_url": self.faker.image_url(),
+                }
+            )
             author_ids.append(author.id)
 
         # 4. Livres et fichiers PDF
         book_ids = []
-        BASE_URL = "http://localhost:5000"  # L'adresse de ton backend Docker
+        BASE_URL = "http://localhost:8000"  # L'adresse de ton backend Docker
 
         print("Génération des livres et des fichiers PDF...")
         for i in range(120):
@@ -60,22 +72,26 @@ class DatabaseSeeder:
             file_name = f"livre_{i}.pdf"
 
             # 1. Chemin physique (pour l'écriture réelle sur le disque dans le conteneur)
-            file_path = os.path.join(os.getcwd(), 'media', 'books', file_name)
+            file_path = os.path.join(os.getcwd(), "media", "books", file_name)
             self.generate_dummy_pdf(file_path, title)
 
             # 2. URL absolue pour le frontend
             absolute_url = f"{BASE_URL}/media/books/{file_name}"
 
-            book = book_repo.create_book({
-                'eid': random.choice(editeur_ids),
-                'isbn': self.faker.isbn13(),
-                'title': title,
-                'description': self.faker.paragraph(nb_sentences=3),
-                'cover_url': self.faker.image_url(),
-                'content_url': absolute_url,  # On stocke l'URL complète ici
-                'pub_date': self.faker.date_between(start_date='-10y', end_date='today')
-            })
-            book_ids.append(book.id)    # Liaisons
+            book = book_repo.create_book(
+                {
+                    "eid": random.choice(editeur_ids),
+                    "isbn": self.faker.isbn13(),
+                    "title": title,
+                    "description": self.faker.paragraph(nb_sentences=3),
+                    "cover_url": self.faker.image_url(),
+                    "content_url": absolute_url,  # On stocke l'URL complète ici
+                    "pub_date": self.faker.date_between(
+                        start_date="-10y", end_date="today"
+                    ),
+                }
+            )
+            book_ids.append(book.id)  # Liaisons
             for aid in random.sample(author_ids, k=random.randint(1, 2)):
                 book_repo.link_author(book.id, aid)
             for gid in random.sample(genre_ids, k=random.randint(1, 3)):
@@ -84,12 +100,10 @@ class DatabaseSeeder:
         # 5. Utilisateurs
         print("Création des utilisateurs...")
         user_ids = []
-        hashed_password = hashPassword('password123')
+        hashed_password = hashPassword("password123")
         for _ in range(50):
             user = auth_repo.register(
-                self.faker.name(),
-                self.faker.unique.email(),
-                hashed_password
+                self.faker.name(), self.faker.unique.email(), hashed_password
             )
             if user:
                 user_ids.append(user.id)
@@ -115,13 +129,13 @@ class DatabaseSeeder:
             selected_uids = random.sample(user_ids, k=min(num_comments, len(user_ids)))
             for uid in selected_uids:
                 comment_repo.create(
-                    user_id=uid,
-                    book_id=bid,
-                    message=self.faker.sentence(nb_words=12)
+                    user_id=uid, book_id=bid, message=self.faker.sentence(nb_words=12)
                 )
 
             # --- FAVORIS ---
-            lucky_users = random.sample(user_ids, k=random.randint(0, min(3, len(user_ids))))
+            lucky_users = random.sample(
+                user_ids, k=random.randint(0, min(3, len(user_ids)))
+            )
             for uid in lucky_users:
                 user_repo.add_to_favorites(uid, bid)
         print(" Peuplement terminé avec succès !")
