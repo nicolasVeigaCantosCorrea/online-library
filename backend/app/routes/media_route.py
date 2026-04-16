@@ -19,8 +19,6 @@ MEDIA_DIR = Path(
     os.getenv("MEDIA_DIR_PATH", LOCAL_MEDIA_DIR)
 ).resolve()  # filesystem path
 
-BASE_URL = os.getenv("MEDIA_BASE_URL", "http://localhost:5000")  # for building URLs
-
 BOOKS_DIR = MEDIA_DIR / "books"
 COVERS_DIR = MEDIA_DIR / "covers"
 
@@ -98,7 +96,7 @@ def _handle_upload(file, allowed_extensions, folder: Path, subfolder: str):
 
     file.save(file_path)
 
-    return f"{BASE_URL}/media/{subfolder}/{unique_name}"
+    return f"/media/{subfolder}/{unique_name}"
 
 
 def _allowed_file(filename: str, allowed_extensions: set):
