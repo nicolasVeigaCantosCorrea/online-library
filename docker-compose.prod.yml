@@ -2,7 +2,13 @@ services:
 
   frontend:
     container_name: nginx-server
-    image: ghcr.io/online-library-glo-2005/online-library/frontend:${IMAGE_TAG:-latest}
+    # Si on souhaite build à partir de l'image CD, mais pour la remise on build à partir du projet
+    # image: ghcr.io/online-library-glo-2005/online-library/frontend:${IMAGE_TAG:-latest}
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfiles/Dockerfile.prod
+    env_file:
+      - ./frontend/.env.production
     ports:
       - '80:80'   #80 default nginx port
     depends_on:
@@ -12,11 +18,14 @@ services:
   
   backend:
     container_name: gunicorn-container
-    image: ghcr.io/online-library-glo-2005/online-library/backend:${IMAGE_TAG:-latest}
-    ports:
-      - '8000:8000'  # 8000 default gunicorn port
+    # image: ghcr.io/online-library-glo-2005/online-library/backend:${IMAGE_TAG:-latest}
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfiles/Dockerfile.prod
     env_file:
       - ./backend/.env
+    volumes:
+    - ./backend/media:/app/media
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=2)"]
       interval: 10s

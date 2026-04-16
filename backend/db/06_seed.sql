@@ -57,8 +57,8 @@ VALUES (
     '000-0-00-000000-0',                      -- ISBN example
     'Nicolas\' rant',                         -- nom
     'Un chef-d\'oeuvre de Me Myself and I',       -- description
-    'http://localhost:5000/media/covers/exampleCover.jpg',  -- url_couverture
-    'http://localhost:5000/media/books/exampleBook.pdf',      -- url_contenu
+    'http://localhost:8000/media/covers/exampleCover.jpg',  -- url_couverture
+    'http://localhost:8000/media/books/exampleBook.pdf',      -- url_contenu
     '2026-04-13'                              -- date_publication -- actual date of the edit
 );
 

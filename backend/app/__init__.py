@@ -38,13 +38,6 @@ def create_app() -> Flask:
     # Middleware config, only filters the /health log
     configure_logging()
 
-    # Route pour servir les PDF
-    @app.route('/media/books/<filename>')
-    def serve_book(filename):
-        # On définit le chemin vers le dossier media
-        media_path = os.path.join(app.root_path, '..', 'media', 'books')
-        return send_from_directory(media_path, filename)
-
     # == Initialize extensions
 
     # JWT tokens
