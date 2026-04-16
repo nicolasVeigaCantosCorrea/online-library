@@ -20,7 +20,7 @@ def get_all():
 
 
 @bp.get("/<int:id>")
-def get_by_id(book_id):
+def get_by_id(id):
     detailed_book = book_service.get_book_details(id)
     return success_response(200, detailed_book, "Détails du livre récupérés")
 
