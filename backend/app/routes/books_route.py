@@ -19,10 +19,10 @@ def get_all():
     return success_response(200, BookSchema(many=True).dump(books), "Livres récupérés")
 
 
-@bp.get("/<int:book_id>")
-def get_by_id(book_id):
-    book = book_service.get_book_by_id(book_id)
-    return success_response(200, BookSchema().dump(book), "Livre trouvé")
+@bp.get("/<int:id>")
+def get_by_id(id):
+    detailed_book = book_service.get_book_details(id)
+    return success_response(200, detailed_book, "Détails du livre récupérés")
 
 
 @bp.post("/")
@@ -50,12 +50,6 @@ def link_genre_to_book(lid, gid):
     return success_response(201, None, "Genre lié au livre")
 
 
-@bp.get("/<int:id>")
-def get_book_full_details(id):
-    detailed_book = book_service.get_book_details(id)
-    return success_response(200, detailed_book, "Détails du livre récupérés")
-
-
 # Utilise la classe directement pour créer l'instance
 @bp.route("/<int:lid>/comments", methods=["GET"])
 def get_book_comments(lid):
@@ -63,15 +57,20 @@ def get_book_comments(lid):
     schema = CommentSchema(many=True)
     return jsonify(schema.dump(comments)), 200
 
+
 @bp.get("/<int:lid>/authors")
 def get_book_authors(lid):
     # On récupère les auteurs via le service
     authors = book_service.get_authors_by_book(lid)
-    return success_response(200, AuthorSchema(many=True).dump(authors), "Auteurs du livre récupérés")
+    return success_response(
+        200, AuthorSchema(many=True).dump(authors), "Auteurs du livre récupérés"
+    )
+
 
 @bp.get("/<int:lid>/genres")
 def get_book_genres(lid):
     # On récupère les genres via le service
     genres = book_service.get_genres_by_book(lid)
-    return success_response(200, GenreSchema(many=True).dump(genres), "Genres du livre récupérés")
-
+    return success_response(
+        200, GenreSchema(many=True).dump(genres), "Genres du livre récupérés"
+    )

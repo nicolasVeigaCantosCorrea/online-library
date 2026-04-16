@@ -1,4 +1,4 @@
-import api, { refreshApi } from './api';
+import api from './api';
 import type { LoginData, SignupData, LoginResponse } from '../types/auth';
 import type { ApiRefresh, ApiSuccess } from '../types/api';
 import { unwrap } from '../utils/unwrap';
@@ -20,7 +20,7 @@ export async function logoutRequest(): Promise<void> {
 }
 
 export async function refreshRequest(): Promise<ApiRefresh> {
-  const res = await refreshApi.post<ApiRefresh>('/auth/refresh');
+  const res = await api.post<ApiSuccess>('/auth/refresh');
 
-  return res.data;
+  return unwrap<ApiRefresh>(res);
 }

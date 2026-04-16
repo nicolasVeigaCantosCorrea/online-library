@@ -31,6 +31,7 @@ def register_blueprints(app: Flask) -> None:
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object(Config)
+    app.url_map.strict_slashes = False
 
     # Middleware config, only filters the /health log
     configure_logging()
@@ -41,7 +42,11 @@ def create_app() -> Flask:
     jwt.init_app(app)
 
     # CORS allowed origins
-    cors.init_app(app, resources={r"/*": {"origins": app.config["CORS_ORIGINS"]}})
+    cors.init_app(
+        app,
+        resources={r"/*": {"origins": app.config["CORS_ORIGINS"]}},
+        supports_credentials=True,
+    )
 
     # == This is where our routes are
     register_blueprints(app)
