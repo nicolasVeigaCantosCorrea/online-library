@@ -53,22 +53,26 @@ class DatabaseSeeder:
         print("Génération des livres et des fichiers PDF...")
         for i in range(120):
             title = self.faker.sentence(nb_words=4)
-            # Dans DatabaseSeeder.seed()
             file_name = f"livre_{i}.pdf"
-            file_path = os.path.join(os.getcwd(), 'media', 'books', file_name)
 
+            # 1. Chemin physique (pour l'écriture sur le disque/volume)
+            file_path = os.path.join(os.getcwd(), 'media', 'books', file_name)
             self.generate_dummy_pdf(file_path, title)
+
+            # 2. URL relative (pour le stockage en base de données)
+            # On suit le format de la route media : /media/books/nom_du_fichier
+            relative_url = f"/media/books/{file_name}"
+
             book = book_repo.create_book({
                 'eid': random.choice(editeur_ids),
                 'isbn': self.faker.isbn13(),
                 'title': title,
                 'description': self.faker.paragraph(nb_sentences=3),
-                'cover_url': self.faker.image_url(),
-                'content_url': file_name,  # On stocke le nom du fichier
+                'cover_url': self.faker.image_url(),  # On pourrait faire pareil pour les covers si nécessaire
+                'content_url': relative_url,  # Ici on met l'URL complète
                 'pub_date': self.faker.date_between(start_date='-10y', end_date='today')
             })
             book_ids.append(book.id)
-
             # Liaisons
             for aid in random.sample(author_ids, k=random.randint(1, 2)):
                 book_repo.link_author(book.id, aid)
