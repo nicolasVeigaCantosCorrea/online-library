@@ -32,7 +32,7 @@ function AuthorCatalog() {
               {authors.map(author => (
                   <Link to={`/author/${author.id}`} key={author.id} >
                     <div className="flex flex-row rounded-lg shadow hover:shadow-lg transition cursor-pointer items-center gap-4 p-3">
-                      <img src={author.photo_url} alt={author.name} className="w-16 h-16 object-cover rounded-full"/>
+                        <div>{author.photo_url && <img src={author.photo_url} alt={author.name} className="w-16 h-16 object-cover rounded-full"/>}</div>
                       <div className="font-semibold">{author.name}</div>
                     </div>
                   </Link>

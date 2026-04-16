@@ -51,16 +51,12 @@ function BookDetail() {
         <div className="text-center text-red-500 mt-20">{error}</div>
       ) : (
         <div className="space-y-10">
-          {/* BOOK MAIN */}
           <div className="flex flex-col md:flex-row gap-8 bg-white rounded-xl shadow p-6">
-            {/* COVER */}
             <img
               src={book?.cover_url}
               alt={book?.title}
               className="w-64 h-auto rounded-lg shadow object-cover"
             />
-
-            {/* INFO */}
             <div className="flex flex-col gap-3 flex-1">
               <div className="flex items-start justify-between">
                 <h2 className="text-2xl font-semibold">{book?.title}</h2>
@@ -80,7 +76,7 @@ function BookDetail() {
                       key={genre.id}
                       className="bg-gray-200 px-2 py-1 rounded text-sm"
                     >
-                      {genre.name}
+                      {genre.nom}
                     </span>
                   ))}
                 </div>
@@ -91,7 +87,7 @@ function BookDetail() {
                 <div className="flex flex-wrap gap-2 mt-1">
                   {book?.authors.map((author) => (
                     <span key={author.id} className="text-sm text-gray-700">
-                      {author.name}
+                      {author.nom}
                     </span>
                   ))}
                 </div>
@@ -125,8 +121,6 @@ function BookDetail() {
               )}
             </div>
           </div>
-
-          {/* COMMENT INPUT */}
           {accessToken && (
             <div className="bg-white rounded-xl shadow p-4 flex gap-2">
               <input
@@ -150,8 +144,6 @@ function BookDetail() {
               </button>
             </div>
           )}
-
-          {/* COMMENTS */}
           <div className="space-y-3">
             {comments.map((comment) => (
               <div
