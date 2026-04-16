@@ -1,5 +1,5 @@
 USE online_library;
--- ============================================================
+
 -- TRIGGER: Update Livre.note after insert/update/delete in Noter
 
 DELIMITER $$

@@ -1,8 +1,8 @@
 USE online_library;
 
--- ============================================================
--- EVENTS
--- ============================================================
+
+-- EVENTS every hour
+
 
 -- Also set via Docker-compose
 SET GLOBAL event_scheduler = ON;

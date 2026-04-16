@@ -2,11 +2,7 @@
 -- CREATE DATABASE IF NOT EXISTS online_library;
 USE online_library;
 
--- TODO: Add indexes on foreign keys for better performance (e.g., EID in Livre, AID in Ecrit, GID in Classer, etc.)
-
--- ============================================================
 -- 1. GENRE
--- ============================================================
 CREATE TABLE IF NOT EXISTS Genre (
     GID  INT          NOT NULL AUTO_INCREMENT,
     nom  VARCHAR(100) NOT NULL,
@@ -14,9 +10,8 @@ CREATE TABLE IF NOT EXISTS Genre (
     PRIMARY KEY (GID)
 );
 
--- ============================================================
+
 -- 2. AUTEUR
--- ============================================================
 CREATE TABLE IF NOT EXISTS Auteur (
     AID          INT          NOT NULL AUTO_INCREMENT,
     nom          VARCHAR(100) NOT NULL,
@@ -28,9 +23,8 @@ CREATE TABLE IF NOT EXISTS Auteur (
 
 CREATE INDEX idx_auteur_nom ON Auteur (nom);
 
--- ============================================================
+
 -- 3. EDITEUR
--- ============================================================
 CREATE TABLE IF NOT EXISTS Editeur (
     EID         INT          NOT NULL AUTO_INCREMENT,
     nom         VARCHAR(100) NOT NULL UNIQUE,  -- publishers should have unique names
@@ -39,10 +33,8 @@ CREATE TABLE IF NOT EXISTS Editeur (
     PRIMARY KEY (EID)
 );
 
--- ============================================================
--- 4. UTILISATEUR  (parent of Client, Administrateur, Refresh_tokens)
--- ============================================================
 
+-- 4. UTILISATEUR  (parent of Client, Administrateur, Refresh_tokens)
 CREATE TABLE IF NOT EXISTS Utilisateur (
     UID                  INT          NOT NULL AUTO_INCREMENT,
     nom                  VARCHAR(100) NOT NULL,
@@ -58,9 +50,8 @@ CREATE TABLE IF NOT EXISTS Utilisateur (
 
 CREATE INDEX idx_utilisateur_nom ON Utilisateur (nom);
 
--- ============================================================
+
 -- 5. CLIENT  (ISA Utilisateur)
--- ============================================================
 CREATE TABLE IF NOT EXISTS Client (
     UID INT NOT NULL,
 
@@ -70,9 +61,8 @@ CREATE TABLE IF NOT EXISTS Client (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- ============================================================
+
 -- 6. ADMINISTRATEUR  (ISA Utilisateur)
--- ============================================================
 CREATE TABLE IF NOT EXISTS Administrateur (
     UID INT NOT NULL,
 
@@ -82,9 +72,8 @@ CREATE TABLE IF NOT EXISTS Administrateur (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- ============================================================
+
 -- 7. REFRESH_TOKENS
--- ============================================================
 CREATE TABLE IF NOT EXISTS Refresh_tokens (
     TID         INT          NOT NULL AUTO_INCREMENT,
     UID         INT          NOT NULL,
@@ -110,9 +99,8 @@ CREATE INDEX idx_refresh_token_validation ON Refresh_tokens (jti, revoked, expir
 -- Useful for the TODO cleanup trigger / scheduled purge job: WHERE expires_at < NOW()
 CREATE INDEX idx_refresh_tokens_expires ON Refresh_tokens (expires_at);
 
--- ============================================================
+
 -- 8. LIVRE
--- ============================================================
 CREATE TABLE IF NOT EXISTS Livre (
     LID              INT          NOT NULL AUTO_INCREMENT,
     EID              INT          NOT NULL,  -- FK -> Editeur
@@ -140,9 +128,8 @@ CREATE INDEX idx_livre_nom ON Livre (nom);
 CREATE INDEX idx_livre_date_publication ON Livre (date_publication);
 CREATE INDEX idx_livre_note ON Livre (note);
 
--- ============================================================
+
 -- 9. ECRIT  (Auteur M:N Livre)
--- ============================================================
 CREATE TABLE IF NOT EXISTS Ecrit (
     AID INT NOT NULL,
     LID INT NOT NULL,
@@ -160,9 +147,8 @@ CREATE TABLE IF NOT EXISTS Ecrit (
 -- We need the reverse direction for: "who are the authors of book Y?"
 CREATE INDEX idx_ecrit_lid ON Ecrit (LID);
 
--- ============================================================
+
 -- 10. CLASSER  (Genre M:N Livre)
--- ============================================================
 CREATE TABLE IF NOT EXISTS Classer (
     GID INT NOT NULL,
     LID INT NOT NULL,
@@ -179,9 +165,8 @@ CREATE TABLE IF NOT EXISTS Classer (
 -- Covers the reverse: "what genres does book Y belong to?"
 CREATE INDEX idx_classer_lid ON Classer (LID);
 
--- ============================================================
+
 -- 11. SUIT  (Utilisateur M:N Livre — avec Favoris)
--- ============================================================
 CREATE TABLE IF NOT EXISTS Suit (
     UID     INT     NOT NULL,
     LID     INT     NOT NULL,
@@ -202,9 +187,8 @@ CREATE INDEX idx_suit_lid ON Suit (LID);
 -- Covers: "show me only my favourites" — WHERE UID = ? AND favoris = TRUE
 CREATE INDEX idx_suit_uid_favoris ON Suit (UID, favoris);
 
--- ============================================================
+
 -- 12. CONSULTER  (Utilisateur M:N Livre — date + dernière page)
--- ============================================================
 CREATE TABLE IF NOT EXISTS Consulter (
     UID                   INT      NOT NULL,
     LID                   INT      NOT NULL,
@@ -226,9 +210,8 @@ CREATE INDEX idx_consulter_lid ON Consulter (LID);
 -- Covers: "recently read books for user X" — ORDER BY date_consultation DESC
 CREATE INDEX idx_consulter_uid_date ON Consulter (UID, date_consultation);
 
--- ============================================================
+
 -- 13. NOTER  (Utilisateur M:N Livre — note)
--- ============================================================
 CREATE TABLE IF NOT EXISTS Noter (
     UID  INT            NOT NULL,
     LID  INT            NOT NULL,
@@ -247,9 +230,8 @@ CREATE TABLE IF NOT EXISTS Noter (
 -- Also covers FK enforcement on LID.
 CREATE INDEX idx_noter_lid ON Noter (LID);
 
--- ============================================================
+
 -- 14. COMMENTAIRE
--- ============================================================
 CREATE TABLE IF NOT EXISTS Commentaire (
     CID              INT      NOT NULL AUTO_INCREMENT,
     UID              INT      NOT NULL,

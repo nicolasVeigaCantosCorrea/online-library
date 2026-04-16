@@ -2,9 +2,9 @@ USE online_library;
 
 DELIMITER $$
 
--- ============================================================
+
 -- 1. Register a new client
--- ============================================================
+
 DROP PROCEDURE IF EXISTS sp_inscrire_client$$
 CREATE PROCEDURE sp_inscrire_client(
     IN p_nom      VARCHAR(100),
@@ -24,9 +24,9 @@ BEGIN
     END IF;
 END$$
 
--- ============================================================
+
 -- 2. Create an admin directly
--- ============================================================
+
 DROP PROCEDURE IF EXISTS sp_creer_admin$$
 CREATE PROCEDURE sp_creer_admin(
     IN p_nom      VARCHAR(100),
@@ -46,9 +46,9 @@ BEGIN
     END IF;
 END$$
 
--- ============================================================
+
 -- 3. Promote a client to admin
--- ============================================================
+
 DROP PROCEDURE IF EXISTS sp_promouvoir_admin$$
 CREATE PROCEDURE sp_promouvoir_admin(
     IN p_uid INT
@@ -68,9 +68,9 @@ BEGIN
     END IF;
 END$$
 
--- ============================================================
+
 -- 4. Add a rating
--- ============================================================
+
 DROP PROCEDURE IF EXISTS sp_noter_livre$$
 CREATE PROCEDURE sp_noter_livre(
     IN p_uid  INT,
@@ -88,9 +88,9 @@ BEGIN
     END IF;
 END$$
 
--- ============================================================
+
 -- 5. Toggle a book as favourite
--- ============================================================
+
 DROP PROCEDURE IF EXISTS sp_toggle_favori$$
 CREATE PROCEDURE sp_toggle_favori(
     IN p_uid INT,
@@ -109,9 +109,9 @@ BEGIN
     SELECT * FROM Suit WHERE UID = p_uid AND LID = p_lid;
 END$$
 
--- ============================================================
+
 -- 6. Revoke all tokens of a user
--- ============================================================
+
 DROP PROCEDURE IF EXISTS sp_revoquer_tokens$$
 CREATE PROCEDURE sp_revoquer_tokens(
     IN p_uid INT
@@ -125,9 +125,9 @@ BEGIN
     SELECT ROW_COUNT() AS tokens_revoques;
 END$$
 
--- ============================================================
+
 -- 7. Update reading progress
--- ============================================================
+
 DROP PROCEDURE IF EXISTS sp_mettre_a_jour_lecture$$
 CREATE PROCEDURE sp_mettre_a_jour_lecture(
     IN p_uid  INT,
