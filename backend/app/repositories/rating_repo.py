@@ -15,3 +15,6 @@ class RatingRepo(BaseRepo):
         query = "SELECT AVG(note) as average FROM Noter WHERE LID = %s"
         result = self._db.execute(query, (book_id,))
         return result[0]['average'] if result else 0
+
+
+rating_repo = RatingRepo()
