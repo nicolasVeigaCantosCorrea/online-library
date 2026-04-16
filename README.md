@@ -10,7 +10,10 @@ Full-stack web app to browse and manage books. Users can track progress, bookmar
 
 * Docker Desktop installed and running
 
-  * Windows / Mac / Linux supported
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) must be installed and running
+  - [Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
+  - [Mac](https://docs.docker.com/desktop/setup/install/mac-install/)
+  - [Linux](https://docs.docker.com/desktop/setup/install/linux/)
 
 > Ports `80` and `8000` must be free.
 
@@ -52,7 +55,8 @@ docker compose -f docker-compose.prod.yml down
 ```
 
 ### Reset database (keeps PDFs)
-
+We need to remove PDFs by hand if we do this command.
+This is only for database reset.
 ```bash
 docker compose -f docker-compose.prod.yml down -v
 ```
@@ -71,7 +75,8 @@ email: admin@gmail.com
 password: adminpassword
 ```
 
-Admin panel allows CRUD on core entities (partial).
+- Admin panel allows CRUD on core entities (partial).
+- Admin also allows the promotion of other Users to Admin role
 
 ---
 
