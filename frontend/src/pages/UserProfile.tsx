@@ -9,6 +9,7 @@ import {
 import type { User } from '../types/user';
 import type { Book } from '../types/book';
 import type { Comment } from '../types/comment';
+import { Link } from 'react-router-dom';
 
 function UserProfile() {
   const [user, setUser] = useState<User | null>(null);
@@ -71,12 +72,16 @@ function UserProfile() {
             ) : (
               <div className="space-y-2">
                 {favorites.map((b) => (
-                  <div
+                  <Link
+                    to={`/book/${b.id}`}
                     key={b.id}
-                    className="p-2 rounded hover:bg-pink-50 transition"
+                    className="block p-2 rounded hover:bg-pink-50 transition"
                   >
-                    {b.title}
-                  </div>
+                    <div className="font-medium">{b.title}</div>
+                    <div className="text-xs text-gray-500">
+                      {b.pub_date} • ★ {b.rating ?? 'N/A'}
+                    </div>
+                  </Link>
                 ))}
               </div>
             )}
