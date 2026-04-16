@@ -14,6 +14,8 @@ from app.repositories.auth_repo import auth_repo
 
 from app.utils.security import hashPassword
 
+from app.repositories.rating_repo import rating_repo
+
 
 class DatabaseSeeder:
     def __init__(self):
@@ -50,30 +52,30 @@ class DatabaseSeeder:
 
         # 4. Livres et fichiers PDF
         book_ids = []
+        BASE_URL = "http://localhost:5000"  # L'adresse de ton backend Docker
+
         print("Génération des livres et des fichiers PDF...")
         for i in range(120):
             title = self.faker.sentence(nb_words=4)
             file_name = f"livre_{i}.pdf"
 
-            # 1. Chemin physique (pour l'écriture sur le disque/volume)
+            # 1. Chemin physique (pour l'écriture réelle sur le disque dans le conteneur)
             file_path = os.path.join(os.getcwd(), 'media', 'books', file_name)
             self.generate_dummy_pdf(file_path, title)
 
-            # 2. URL relative (pour le stockage en base de données)
-            # On suit le format de la route media : /media/books/nom_du_fichier
-            relative_url = f"/media/books/{file_name}"
+            # 2. URL absolue pour le frontend
+            absolute_url = f"{BASE_URL}/media/books/{file_name}"
 
             book = book_repo.create_book({
                 'eid': random.choice(editeur_ids),
                 'isbn': self.faker.isbn13(),
                 'title': title,
                 'description': self.faker.paragraph(nb_sentences=3),
-                'cover_url': self.faker.image_url(),  # On pourrait faire pareil pour les covers si nécessaire
-                'content_url': relative_url,  # Ici on met l'URL complète
+                'cover_url': self.faker.image_url(),
+                'content_url': absolute_url,  # On stocke l'URL complète ici
                 'pub_date': self.faker.date_between(start_date='-10y', end_date='today')
             })
-            book_ids.append(book.id)
-            # Liaisons
+            book_ids.append(book.id)    # Liaisons
             for aid in random.sample(author_ids, k=random.randint(1, 2)):
                 book_repo.link_author(book.id, aid)
             for gid in random.sample(genre_ids, k=random.randint(1, 3)):
@@ -96,10 +98,19 @@ class DatabaseSeeder:
         if user_ids:
             auth_repo.promote_to_admin(user_ids[0])
 
-        # 6. Interactions (Commentaires et Favoris)
-        print("Ajout des commentaires et favoris...")
+        print("Ajout des commentaires, favoris et notes...")
         for bid in book_ids:
-            # Commentaires
+            # --- NOTES (Ratings) ---
+            # On simule que 3 à 8 utilisateurs notent chaque livre pour avoir une moyenne
+            num_ratings = random.randint(3, 8)
+            rating_users = random.sample(user_ids, k=min(num_ratings, len(user_ids)))
+
+            for uid in rating_users:
+                # Génère une note entre 1 et 5
+                note_aleatoire = random.randint(1, 5)
+                rating_repo.upsert_rating(uid, bid, note_aleatoire)
+
+            # --- COMMENTAIRES ---
             num_comments = random.randint(1, 3)
             selected_uids = random.sample(user_ids, k=min(num_comments, len(user_ids)))
             for uid in selected_uids:
@@ -109,11 +120,10 @@ class DatabaseSeeder:
                     message=self.faker.sentence(nb_words=12)
                 )
 
-            # Favoris
+            # --- FAVORIS ---
             lucky_users = random.sample(user_ids, k=random.randint(0, min(3, len(user_ids))))
             for uid in lucky_users:
                 user_repo.add_to_favorites(uid, bid)
-
         print(" Peuplement terminé avec succès !")
 
 
