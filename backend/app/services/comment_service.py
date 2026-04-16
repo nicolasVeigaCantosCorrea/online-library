@@ -11,7 +11,7 @@ class CommentService(OwnableService):
         comment = self._repo.get_by_id(resource_id)
         if not comment:
             raise AppError(404, "Commentaire introuvable")
-        return str(comment.user_id)
+        return str(comment.uid)
 
     def add_comment(self, user_id, book_id, message):
         return self._repo.create(user_id, book_id, message)

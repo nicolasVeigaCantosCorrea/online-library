@@ -5,9 +5,11 @@ import {
 } from '../services/authService';
 import { useAuthStore } from '../store/authStore';
 import type { LoginData, LoginResponse, SignupData } from '../types/auth';
+import type { User } from '../types/user';
 import { showError } from '../utils/getErrorMessage';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { loadFavoritesIntoStore } from '../services/initService';
 
 export const useAuth = () => {
   const { setToken, setUser, logout: clearAuth } = useAuthStore();
@@ -18,7 +20,8 @@ export const useAuth = () => {
     }
 
     setToken(data.token_access);
-    setUser(data.user.name, data.user.email, data.user.is_admin);
+    setUser(data.user as User);
+    loadFavoritesIntoStore();
     toast.success(`Welcome ${data.user.name}`);
     navigate('/');
   };
@@ -28,7 +31,7 @@ export const useAuth = () => {
 
     try {
       const res = await loginRequest(loginData);
-      authenticate(res);
+      await authenticate(res);
     } catch (error) {
       showError(error);
     }
@@ -39,7 +42,7 @@ export const useAuth = () => {
 
     try {
       const res = await signupRequest(signupData);
-      authenticate(res);
+      await authenticate(res);
     } catch (error) {
       showError(error);
     }
@@ -48,10 +51,12 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       await logoutRequest();
+      toast.success('Goodbye!');
     } catch (error) {
       showError(error);
+    } finally {
+      clearAuth();
     }
-    clearAuth();
   };
 
   return { login, signup, logout };
