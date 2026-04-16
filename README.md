@@ -1,37 +1,110 @@
 # 📚 Online Library
 
-A full-stack web application for browsing and managing an online library. Users can track reading progress, bookmark favourites, and leave reviews. Admins can manage content and moderate reviews.
+Full-stack web app to browse and manage books. Users can track progress, bookmark, and review. Admins manage content and moderate reviews.
+
+---
+
+## 🚀 Getting Started
+
+### ⚙️ Requirements
+
+* Docker Desktop installed and running
+
+  * Windows / Mac / Linux supported
+
+> Ports `80` and `8000` must be free.
+
+---
+
+### 1. Clone
+
+```bash
+git clone https://github.com/online-library-glo-2005/online-library.git
+cd online-library
+```
+
+---
+
+### 2. Environment
+
+`.env` files are included (school project). No setup needed.
+
+---
+
+## 🏭 Production
+
+### Run
+
+```bash
+docker compose -f docker-compose.prod.yml up --build -d
+```
+
+### Seed database (generates book PDFs)
+
+```bash
+docker compose -f docker-compose.prod.yml exec backend env PYTHONPATH=. python app/auto_populate.py
+```
+
+### Stop
+
+```bash
+docker compose -f docker-compose.prod.yml down
+```
+
+### Reset database (keeps PDFs)
+
+```bash
+docker compose -f docker-compose.prod.yml down -v
+```
+
+---
+
+## 🔐 Access
+
+* App: [http://localhost](http://localhost)
+* Create an account to use features
+
+**Admin**
+
+```
+email: admin@gmail.com
+password: adminpassword
+```
+
+Admin panel allows CRUD on core entities (partial).
 
 ---
 
 ## 🏗️ Architecture
 
-Three-tier architecture with each tier running in its own Docker container:
-
 ```
-Vite React (Frontend)  →  Flask (Backend)  →  MySQL (Database)
-   :3000                    :5000                  :3306
+Frontend (React) → Backend (Flask) → Database (MySQL)
+     :80              :8000               internal
 ```
 
-> Ports shown are for development. Production uses :80 (frontend) and :8000 (backend).
+Dev ports:
+
+```
+:3000 → :5000 → :3306
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 19, TypeScript, Tailwind CSS, Vite |
-| Backend | Python, Flask |
-| Database | MySQL 8 |
-| Auth | JWT (Flask-JWT-Extended) |
-| Validation | Marshmallow |
-| Containerization | Docker, Docker Compose |
-| Testing | pytest |
+| Layer      | Tech                              |
+| ---------- | --------------------------------- |
+| Frontend   | React, TypeScript, Tailwind, Vite |
+| Backend    | Python, Flask                     |
+| Database   | MySQL 8                           |
+| Auth       | JWT                               |
+| Validation | Marshmallow                       |
+| Containers | Docker, Compose                   |
+| Testing    | pytest                            |
 
 ---
 
-## 📁 Project Structure
+## 📁 Structure
 
 ```
 online-library/
@@ -39,172 +112,125 @@ online-library/
 ├── docker-compose.prod.yml
 ├── frontend/
 │   ├── Dockerfiles/
-│   │   ├── Dockerfile.dev
-│   │   └── Dockerfile.release
-│   ├── src/
-│   └── ...
+│   └── src/
 └── backend/
     ├── Dockerfiles/
-    │   ├── Dockerfile.dev
-    │   └── Dockerfile.release
     ├── run.py
     ├── requirements.txt
     ├── db/
-    │   ├── 01_init.sql
-    │   ├── 02_triggers.sql
-    │   ├── 03_indexes.sql
-    │   ├── 04_procedures.sql
-    │   └── 05_seed.sql
     └── app/
-        ├── __init__.py     ← app factory
-        └── ...
 ```
-
-> More details about the backend and frontend structure are available in the documentation folder.
 
 ---
 
-## ⚙️ Requirements
+## 💻 Development
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) must be installed and running
-  - [Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
-  - [Mac](https://docs.docker.com/desktop/setup/install/mac-install/)
-  - [Linux](https://docs.docker.com/desktop/setup/install/linux/)
+> Ports `3000`, `5000`, `3306` must be free.
 
----
-
-## 🚀 Getting Started
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/online-library-glo-2005/online-library.git
-cd online-library
-```
-
-### 2. Environment variables
-
-`.env` files are committed for simplicity (school project). No configuration needed — everything works out of the box.
-
-### 3a. Development — build and run
-
-> Make sure ports `3000`, `5000`, and `3306` are free before starting.
-
-First time, or after changing a `Dockerfile`, `requirements.txt`, or `package.json`:
+### First run / after dependency changes
 
 ```bash
 docker compose up --build
 ```
 
-For subsequent runs:
+### Normal run
 
 ```bash
 docker compose up
 ```
 
-> add a `-d` if you want containers to run in the background (detached mode), freeing your terminal.
-
-### 3b. Production — run from pre-built images
-
-Pull and start the latest images from GitHub Container Registry:
+Detached mode:
 
 ```bash
-docker compose -f docker-compose.prod.yml up -d
+docker compose up -d
 ```
 
-To run a specific release by tag:
+---
 
-```bash
-IMAGE_TAG=<tag> docker compose -f docker-compose.prod.yml up -d
-```
-
-### 4. Stop
+### Stop
 
 ```bash
 docker compose down
 ```
 
-If .env changed and the container and volume was built once already, do this for a fresh start (careful this deletes all stored data of the container):
+Reset (deletes DB data):
 
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 
 ---
 
-## 🌐 Servers
+## 🌐 Services
 
-Admin connection info:
-- **Username :** admin
-- **Email :** admin@gmail.com
-- **Password :** adminpassword
+### Dev
 
-### Dev servers
+| Service  | URL                                            |
+| -------- | ---------------------------------------------- |
+| Frontend | [http://localhost:3000](http://localhost:3000) |
+| Backend  | [http://localhost:5000](http://localhost:5000) |
+| MySQL    | localhost:3306                                 |
 
-| Service | URL | Notes |
-|---|---|---|
-| Frontend | http://localhost:3000 | React dev server (Vite) |
-| Backend | http://localhost:5000 | Flask API |
-| MySQL | localhost:3306 | Dev only — connect via MySQL Workbench |
+### Prod
 
-> ⚠️ The MySQL port (3306) is exposed in development only. It is not available in production.
-
-### Prod servers
-| Service | URL | Notes |
-|---|---|---|
-| Frontend | http://localhost (:80 default port)| Served by Nginx |
-| Backend | http://localhost:8000 | Gunicorn (Flask) |
+| Service  | URL                                            |
+| -------- | ---------------------------------------------- |
+| Frontend | [http://localhost](http://localhost)           |
+| Backend  | [http://localhost:8000](http://localhost:8000) |
 
 ---
 
 ## 🗄️ Database
 
-The database is initialized automatically on first boot. All SQL files in `backend/db/` are executed in order.
+Auto-initialized from `backend/db/`.
 
-To inspect the database, connect via **MySQL Workbench** by dev composer:
+### Access (dev)
 
-| Field | Value |
-|---|---|
-| Host | localhost |
-| Port | 3306 |
-| User | `myuser` (app user) or `root` (admin) |
-| Password | `mypassword`(app user) or `secret`(admin) |
+| Field    | Value               |
+| -------- | ------------------- |
+| Host     | localhost           |
+| Port     | 3306                |
+| User     | myuser / root       |
+| Password | mypassword / secret |
 
-> Password and User depends on the .env variables of  So if there are changes there this will change
----
-
-## 🔄 When to Rebuild
-
-Run `docker compose up --build` when you change:
-
-- A `Dockerfile`
-- `requirements.txt` (Python dependencies)
-- `package.json` (JS dependencies)
-
-For regular code changes (`.py`, `.tsx`, etc.), volume mounts pick up changes automatically — no rebuild needed.
+Depends on `.env`.
 
 ---
 
-## 📡 API Endpoints
+## 🔄 Rebuild Rules
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/` | API info |
-| GET | `/health` | Health check |
+Run rebuild if you change:
 
-> More endpoints are documented in the documentation folder as the project grows.
+* Dockerfile
+* `requirements.txt`
+* `package.json`
+
+No rebuild needed for code changes.
+
+---
+
+## 📡 API
+
+| Method | Endpoint  | Description  |
+| ------ | --------- | ------------ |
+| GET    | `/`       | API info     |
+| GET    | `/health` | Health check |
+
+Full API: see documentation folder.
 
 ---
 
 ## 🧪 Testing
 
-Via Docker (recommended):
+IMPORTANT - No tests were done for this release. So these are just the commands that we would have needed if we had any tests.
+
+### Docker
 
 ```bash
 docker compose exec backend pytest
 ```
 
-Or locally with a virtual environment:
+### Local
 
 ```bash
 cd backend
