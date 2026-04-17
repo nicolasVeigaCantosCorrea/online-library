@@ -11,7 +11,7 @@ function Catalog() {
   useEffect(() => {
     getBooks()
       .then((data) => {
-        setBooks(data);
+        setBooks(data ?? []);
         setIsLoading(false);
       })
       .catch(() => {
