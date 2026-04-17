@@ -11,7 +11,7 @@ function AuthorCatalog() {
   useEffect(() => {
     getAuthors()
       .then((data) => {
-        setAuthors(data);
+        setAuthors(data ?? []);
         setIsLoading(false);
       })
       .catch(() => {

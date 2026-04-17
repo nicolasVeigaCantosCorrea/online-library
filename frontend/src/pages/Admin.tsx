@@ -17,7 +17,7 @@ function Admin() {
   const [authors, setAuthors] = useState<Author[]>([]);
   const [newAuthor, setNewAuthor] = useState({ nom: "", description: "" });
   const [publishers, setPublishers] = useState<Publisher[]>([]);
-  const [newPublisher, setNewPublisher] = useState({ nom: "", description: "" });
+  const [newPublisher, setNewPublisher] = useState({ name: "", description: "" });
   const [books, setBooks] = useState<Book[]>([]);
   const [newBook, setNewBook] = useState({ title: "", isbn: "", description: "", pub_date: "", eid: 0 });
   const [selectedAuthors, setSelectedAuthors] = useState<number[]>([]);
@@ -30,10 +30,10 @@ function Admin() {
   useEffect(() => {
     Promise.all([getGenres(), getAuthors(), getPublishers(), getBooks()])
         .then(([genresData, authorsData, publishersData, booksData]) => {
-          setGenres(genresData);
-          setAuthors(authorsData);
-          setPublishers(publishersData);
-          setBooks(booksData);
+          setGenres(genresData ?? []);
+          setAuthors(authorsData ?? []);
+          setPublishers(publishersData ?? []);
+          setBooks(booksData ?? []);
           setIsLoading(false);
         })
         .catch(() => {
@@ -45,7 +45,7 @@ function Admin() {
   return (
     <div className="min-h-screen bg-gray-100 text-black p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Author Catalog</h1>
+        <h1 className="text-3xl font-bold mb-8">Admin Controls</h1>
 
         {isLoading ? (
           <div className="text-center text-gray-500 mt-20">Loading...</div>
@@ -170,7 +170,7 @@ function Admin() {
                               ...selectedAuthors.map(aid => linkAuthorToBook(newBookData.data.id, aid)),
                               ...selectedGenres.map(gid => linkGenreToBook(newBookData.data.id, gid)),
                             ]);
-                            getBooks().then(data => setBooks(data));
+                            getBooks().then(data => setBooks(data ?? []));
                             setNewBook({ title: "", isbn: "", description: "", pub_date: "", eid: 0 });
                             setCoverFile(null);
                             setBookFile(null);
@@ -187,7 +187,7 @@ function Admin() {
                               </div>
                               <button onClick={() => {
                                 deleteBook(book.id).then(() => {
-                                  getBooks().then(data => setBooks(data));
+                                  getBooks().then(data => setBooks(data ?? []));
                                 });
                               }}>
                                 Delete
@@ -203,8 +203,8 @@ function Admin() {
                           <input
                             type="text"
                             placeholder="Author name"
-                            value={newAuthor.name}
-                            onChange={(e) => setNewAuthor({ ...newAuthor, name: e.target.value })}
+                            value={newAuthor.nom}
+                            onChange={(e) => setNewAuthor({ ...newAuthor, nom: e.target.value })}
                             className="border rounded p-2"
                           />
                           <input
@@ -216,8 +216,8 @@ function Admin() {
                           />
                           <button onClick={() => {
                             createAuthor(newAuthor).then(() => {
-                              getAuthors().then(data => setAuthors(data));
-                              setNewAuthor({ name: "", description: "" });
+                              getAuthors().then(data => setAuthors(data ?? []));
+                              setNewAuthor({ nom: "", description: "" });
                             });
                           }}>
                             Add
@@ -232,7 +232,7 @@ function Admin() {
                               </div>
                               <button onClick={() => {
                                 deleteAuthor(author.id).then(() => {
-                                  getAuthors().then(data => setAuthors(data));
+                                  getAuthors().then(data => setAuthors(data ?? []));
                                 });
                               }}>
                                 Delete
@@ -253,8 +253,8 @@ function Admin() {
                               className="border rounded p-2"
                           />
                           <button onClick={() => {
-                              createGenre(newGenre.name).then(() => {
-                                    getGenres().then(data => setGenres(data));
+                              createGenre(newGenre).then(() => {
+                                    getGenres().then(data => setGenres(data ?? []));
                                     setNewGenre({ name: "" });
                               });
                             }}>
@@ -267,7 +267,7 @@ function Admin() {
                             <span>{genre.name}</span>
                             <button onClick={() => {
                               deleteGenre(genre.id).then(() => {
-                                getGenres().then(data => setGenres(data));
+                                getGenres().then(data => setGenres(data ?? []));
                               });
                             }}>
                               Delete
@@ -296,7 +296,7 @@ function Admin() {
                           />
                           <button onClick={() => {
                             createPublisher(newPublisher).then(() => {
-                              getPublishers().then(data => setPublishers(data));
+                              getPublishers().then(data => setPublishers(data ?? []));
                               setNewPublisher({ name: "", description: "" });
                             });
                           }}>
@@ -312,7 +312,7 @@ function Admin() {
                               </div>
                               <button onClick={() => {
                                 deletePublisher(publisher.id).then(() => {
-                                  getPublishers().then(data => setPublishers(data));
+                                  getPublishers().then(data => setPublishers(data ?? []));
                                 });
                               }}>
                                 Delete

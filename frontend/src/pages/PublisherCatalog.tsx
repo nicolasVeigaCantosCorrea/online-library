@@ -11,7 +11,7 @@ function PublisherCatalog() {
   useEffect(() => {
     getPublishers()
       .then((data) => {
-        setPublishers(data);
+        setPublishers(data ?? []);
         setIsLoading(false);
       })
       .catch(() => {
